@@ -1,14 +1,17 @@
 import Image from "next/image";
 import Link from "next/link";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
+ 
 
 export default function Home() {
   const logoWrapRef = useRef(null);
   const logoInnerRef = useRef(null);
   const logoLineRef = useRef(null);
   const signInRef = useRef(null); // 🔸 New ref for Sign In
+
+
 
   useGSAP(() => {
     const tl = gsap.timeline();
@@ -38,8 +41,11 @@ export default function Home() {
       );
   }, []);
 
+
+
   return (
-    <section className="main-bg">
+    <>
+     <section className="main-bg">
       <div className="h-screen flex items-center justify-center">
         <div className="space-y-24">
           <div
@@ -66,12 +72,15 @@ export default function Home() {
             </div>
           </div>
           <div ref={signInRef}>
-            <Link className="btn-a" href={"/sign-in"}>
+            <Link className="btn-a" href={"/auth"}>
               Sign In
             </Link>
           </div>
         </div>
       </div>
     </section>
+     
+    </>
+   
   );
 }

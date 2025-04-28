@@ -9,134 +9,93 @@ import { MdOutlineFileUpload, MdDeleteOutline } from "react-icons/md";
 import { BiEditAlt } from "react-icons/bi";
 import Popup from "../Popup";
 import Image from "next/image";
+import { userscustomStyles } from "@/utils/TableStyle/dataTableStyles";
 
-export default function InvoiceTable() {
+export default function InvoiceTable({ users, pagination, handlePageState }) {
   const [currentPage, setCurrentPage] = useState(1);
-
   const [HistoryUser, setHistoryUser] = useState(false);
-  const [file, setFile] = useState(null);
 
   const openHistoryUser = () => setHistoryUser(true);
+  console.log(users, "tracking users data");
 
-  const itemsPerPage = 6;
-
-  const activeUsers = [
-    {
-      id: 1,
-      name: "Antony Rogers",
-      email: "antony@gmail.com",
-      avatar: "https://randomuser.me/api/portraits/men/32.jpg",
-      userid: "12747",
-      status: "completed",
-      date: "21/4/2025",
-      usageColor: "bg-yellow-100 text-yellow-700",
-    },
-    {
-        id: 1,
-        name: "Antony Rogers",
-        email: "antony@gmail.com",
-        avatar: "https://randomuser.me/api/portraits/men/32.jpg",
-        userid: "12747",
-        status: "completed",
-        date: "21/4/2025",
-        usageColor: "bg-yellow-100 text-yellow-700",
-      },
-      {
-        id: 1,
-        name: "Antony Rogers",
-        email: "antony@gmail.com",
-        avatar: "https://randomuser.me/api/portraits/men/32.jpg",
-        userid: "12747",
-        status: "completed",
-        date: "21/4/2025",
-        usageColor: "bg-yellow-100 text-yellow-700",
-      },
-      {
-        id: 1,
-        name: "Antony Rogers",
-        email: "antony@gmail.com",
-        avatar: "https://randomuser.me/api/portraits/men/32.jpg",
-        userid: "12747",
-        status: "completed",
-        date: "21/4/2025",
-        usageColor: "bg-yellow-100 text-yellow-700",
-      },
-      {
-        id: 1,
-        name: "Antony Rogers",
-        email: "antony@gmail.com",
-        avatar: "https://randomuser.me/api/portraits/men/32.jpg",
-        userid: "12747",
-        status: "completed",
-        date: "21/4/2025",
-        usageColor: "bg-yellow-100 text-yellow-700",
-      },
-      {
-        id: 1,
-        name: "Antony Rogers",
-        email: "antony@gmail.com",
-        avatar: "https://randomuser.me/api/portraits/men/32.jpg",
-        userid: "12747",
-        status: "completed",
-        date: "21/4/2025",
-        usageColor: "bg-yellow-100 text-yellow-700",
-      },
-      {
-        id: 1,
-        name: "Antony Rogers",
-        email: "antony@gmail.com",
-        avatar: "https://randomuser.me/api/portraits/men/32.jpg",
-        userid: "12747",
-        status: "completed",
-        date: "21/4/2025",
-        usageColor: "bg-yellow-100 text-yellow-700",
-      },
-  ];
-
-  const totalPages = Math.ceil(activeUsers.length / itemsPerPage);
-  const paginatedData = activeUsers.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  const handlePageChange = (page) => {
+    console.log(page, "page");
+    setCurrentPage(page);
+    if (page >= 1 && page <= pagination.totalPages) {
+      handlePageState(page);
+    }
+  };
 
   const columns = [
-    {
-      name: "Name",
-      selector: (row) => row.name,
-      sortable: true,
-      width: "250px",
-      cell: (row) => (
-        <div className="flex items-center gap-3">
-          <img
-            src={row.avatar}
-            alt={row.name}
-            className="w-10 h-10 rounded-full"
-          />
-          <div>
-            <div className="font-semibold text-gray-800">{row.name}</div>
-            <div className="text-sm text-gray-500">{row.email}</div>
+   {
+        name: "Name",
+        selector: (row) => row.full_name,
+        sortable: true,
+        width: "250px",
+        cell: (row) => (
+          <div className="relative">
+            {row.apply && (
+              <span className="bg-[#5B9425] text-white px-4 py-1 rounded-full absolute -top-6 -left-5">
+                Re-applied
+              </span>
+            )}
+            <div className="flex items-center gap-3">
+              {row.avatar ? (
+                <img
+                  src={row.avatar}
+                  alt={row.full_name}
+                  className="w-10 h-10 rounded-full"
+                />
+              ) : (
+                <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                  <span className="text-lg">
+                    {" "}
+                    <HiOutlineUser />
+                  </span>
+                </div>
+              )}
+              <div>
+                <div className="font-semibold text-gray-800">{row?.user?.full_name || 'N/A'}</div>
+                <div className="text-sm text-gray-500">{row?.user?.email || 'N/A'}</div>
+              </div>
+            </div>
           </div>
-        </div>
-      ),
-    },
+        ),
+      },
 
     {
       name: "User ID",
-      selector: (row) => row.userid,
+      selector: (row) => (
+        <p>
+          {row?.user?._id || "N/A"}
+        </p>
+      ),
       sortable: true,
     },
 
     {
       name: "Date",
-      selector: (row) => row.date,
-      cell: (row) => <div>{row.date}</div>,
-    },
+      selector: (row) => row?.transactionDate,
+      cell: (row) => {
+        const date = new Date(row?.transactionDate);
+        return (
+          <p>
+            {date.toLocaleDateString("en-GB", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+            })}
+          </p>
+        );
+      },
+    }
+    ,
     {
       name: "status",
       cell: (row) => (
-        <div> 
-          <span className="text-gray-500 bg-green-100 text-sm px-5 py-2 rounded-full">
-            Completed
+        <div>
+          <span className="text-gray-500 bg-green-200 text-sm px-5 py-2 rounded-full capitalize">
+            {row?.status}
           </span>
         </div>
       ),
@@ -145,75 +104,17 @@ export default function InvoiceTable() {
       name: "Edit",
       cell: (row) => (
         <button
-            onClick={openHistoryUser}
-            className="text-gray-500 bg-green-100 text-sm px-5 py-2 rounded-full"
-          >
-            View
-          </button>
+          onClick={openHistoryUser}
+          className="text-white bg-green-600 text-sm px-5 py-2 rounded-full"
+        >
+          View
+        </button>
       ),
     },
   ];
 
-  const customStyles = {
-    table: {
-      style: {
-        borderRadius: "16px",
-        border: "none",
-        width: "100%",
-      },
-    },
-    head: {
-      style: {
-        minHeight: "72px",
-        width: "99%",
-        margin: "10px 2px",
-        backgroundColor: "#E5F0FE",
-        borderRadius: "8px",
-        outline: "1px solid #E5F0FE",
-      },
-    },
-    headCells: {
-      style: {
-        paddingLeft: "20px",
-        paddingRight: "20px",
-        backgroundColor: "#E5F0FE",
-        fontSize: "16px",
-      },
-    },
-    rows: {
-      style: {
-        minHeight: "72px",
-        width: "99%",
-        margin: "10px 2px",
-        backgroundColor: "#ffffff",
-        borderRadius: "8px",
-        outline: "1px solid #ebe6e7",
-      },
-      highlightOnHoverStyle: {
-        backgroundColor: "#f1f5ff",
-        borderRadius: "8px",
-        outline: "1px solid #3b82f6",
-      },
-    },
-    cells: {
-      style: {
-        paddingLeft: "20px",
-        paddingRight: "20px",
-        fontSize: "14px",
-      },
-    },
-    pagination: {
-      style: {
-        padding: "12px 20px",
-      },
-    },
-  };
+  
 
-  const handlePageChange = (page) => {
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
-    }
-  };
   return (
     <>
       <div className="fund-table border border-gray-200 py-3 px-6 rounded-2xl">
@@ -225,56 +126,60 @@ export default function InvoiceTable() {
             All Invoie
           </h2>
           <div className="flex items-center gap-2">
-            <Link
-              href="#"
-              onClick={() => handlePageChange(currentPage - 1)}
-              className={`flex items-center text-[#5B9425] px-2 py-2 text-sm drop-shadow-sm rounded-xl bg-white ${
-                currentPage === 1 ? "cursor-not-allowed opacity-50" : ""
-              }`}
-            >
-              <IoChevronBackSharp />
-            </Link>
-            <div className="items-center hidden lg:flex gap-x-3">
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                (page) => (
-                  <Link
-                    href="#"
-                    key={page}
-                    onClick={() => handlePageChange(page)}
-                    className={`px-3 py-1 text-sm rounded-md text-[#5B9425] ${
-                      currentPage === page
-                        ? "bg-[#D1E7D1]"
-                        : "hover:bg-[#D1E7D1]"
-                    }`}
-                  >
-                    {page}
-                  </Link>
-                )
-              )}
-            </div>
-            <Link
-              href="#"
-              onClick={() => handlePageChange(currentPage + 1)}
-              className={`flex items-center text-[#5B9425] px-2 py-2 text-sm drop-shadow-sm rounded-xl bg-white ${
-                currentPage === totalPages
-                  ? "cursor-not-allowed opacity-50"
-                  : ""
-              }`}
-            >
-              <IoChevronForwardSharp />
-            </Link>
+          <Link
+            href="#"
+            onClick={() => {
+              if (pagination.prev) handlePageChange(pagination.prev);
+            }}
+            className={`flex items-center text-[#5B9425] px-2 py-2 text-sm rounded-xl bg-white ${
+              currentPage === 1 ? "cursor-not-allowed opacity-50" : ""
+            }`}
+          >
+            <IoChevronBackSharp />
+          </Link>
+
+          <div className="hidden lg:flex gap-x-3 items-center">
+            {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map(
+              (page) => (
+                <Link
+                  href="#"
+                  key={page}
+                  onClick={() => handlePageChange(page)}
+                  className={`px-3 py-1 text-sm rounded-md text-[#5B9425] ${
+                    currentPage === page ? "bg-[#D1E7D1]" : "hover:bg-[#D1E7D1]"
+                  }`}
+                >
+                  {page}
+                </Link>
+              )
+            )}
           </div>
+
+          <Link
+            href="#"
+            onClick={() => {
+              if (pagination.next) handlePageChange(pagination.next);
+            }}
+            className={`flex items-center text-[#5B9425] px-2 py-2 text-sm rounded-xl bg-white ${
+              currentPage === pagination.totalCount
+                ? "cursor-not-allowed opacity-50"
+                : ""
+            }`}
+          >
+            <IoChevronForwardSharp />
+          </Link>
+        </div>
         </div>
         <div className="h-[460px] overflow-scroll md:overflow-x-hidden ">
-        <DataTable
-          columns={columns}
-          data={paginatedData}
-          customStyles={customStyles}
-          highlightOnHover
-          pointerOnHover
-          responsive
-        />
-         </div>
+          <DataTable
+            columns={columns}
+            data={users}
+            customStyles={userscustomStyles}
+            highlightOnHover
+            pointerOnHover
+            responsive
+          />
+        </div>
       </div>
 
       <Popup
@@ -309,34 +214,34 @@ export default function InvoiceTable() {
             </div>
             <div className="space-y-2  ">
               <h3 className="text-black text-xl font-semibold">Items</h3>
-              <div class="overflow-x-auto overflow-y-scroll h-[250px]">
-                <table class="min-w-full divide-y divide-gray-200  ">
-                  <thead class="bg-gray-100 whitespace-nowrap">
+              <div className="overflow-x-auto overflow-y-scroll h-[250px]">
+                <table className="min-w-full divide-y divide-gray-200  ">
+                  <thead className="bg-gray-100 whitespace-nowrap">
                     <tr>
-                      <th class="px-4 py-4 text-left text-xs font-semibold text-slate-900 uppercase tracking-wider">
+                      <th className="px-4 py-4 text-left text-xs font-semibold text-slate-900 uppercase tracking-wider">
                         Name
                       </th>
-                      <th class="px-4 py-4 text-left text-xs font-semibold text-slate-900 uppercase tracking-wider">
+                      <th className="px-4 py-4 text-left text-xs font-semibold text-slate-900 uppercase tracking-wider">
                         Qty
                       </th>
-                      <th class="px-4 py-4 text-left text-xs font-semibold text-slate-900 uppercase tracking-wider">
+                      <th className="px-4 py-4 text-left text-xs font-semibold text-slate-900 uppercase tracking-wider">
                         Price
                       </th>
                     </tr>
                   </thead>
 
-                  <tbody class="bg-white divide-y divide-gray-200 ">
+                  <tbody className="bg-white divide-y divide-gray-200 ">
                     {Array(20)
                       .fill()
                       .map((_, index) => (
-                        <tr>
-                          <td class="px-4 py-4 text-sm text-slate-900 font-medium">
+                        <tr key={index}>
+                          <td className="px-4 py-4 text-sm text-slate-900 font-medium">
                             Egg
                           </td>
-                          <td class="px-4 py-4 text-sm text-slate-600 font-medium">
+                          <td className="px-4 py-4 text-sm text-slate-600 font-medium">
                             12
                           </td>
-                          <td class="px-4 py-4 text-sm text-slate-600 font-medium">
+                          <td className="px-4 py-4 text-sm text-slate-600 font-medium">
                             $12
                           </td>
                         </tr>

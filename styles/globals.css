@@ -85,6 +85,17 @@ button{
   cursor: pointer;
 }
 
+ 
+
+.main-bg-login {
+  background: linear-gradient(180deg, rgba(229, 240, 254, 1) 30%, rgb(185 255 191) 100%);
+}
+
+@media (min-width: 1024px) {
+  .main-bg-login {
+    background: transparent !important; /* override karne ke liye */
+  }
+}
 /*==== End Popup Css ====*/
 @media (max-width: 1200px)
 {

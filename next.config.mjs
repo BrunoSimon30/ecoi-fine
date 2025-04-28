@@ -1,6 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
+  // output: "export",
+  images: {
+    unoptimized: true,
+  },
+  // trailingSlash: true, // Ensures paths have a trailing slash
 };
 
 export default nextConfig;

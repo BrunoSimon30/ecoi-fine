@@ -283,34 +283,34 @@ export default function PurchaseHistoryTable() {
                  </div>
                  <div className="space-y-2  ">
                    <h3 className="text-black text-xl font-semibold">Items</h3>
-                   <div class="overflow-x-auto overflow-y-scroll h-[250px]">
-                     <table class="min-w-full divide-y divide-gray-200  ">
-                       <thead class="bg-gray-100 whitespace-nowrap">
+                   <div className="overflow-x-auto overflow-y-scroll h-[250px]">
+                     <table className="min-w-full divide-y divide-gray-200  ">
+                       <thead className="bg-gray-100 whitespace-nowrap">
                          <tr>
-                           <th class="px-4 py-4 text-left text-xs font-semibold text-slate-900 uppercase tracking-wider">
+                           <th className="px-4 py-4 text-left text-xs font-semibold text-slate-900 uppercase tracking-wider">
                              Name
                            </th>
-                           <th class="px-4 py-4 text-left text-xs font-semibold text-slate-900 uppercase tracking-wider">
+                           <th className="px-4 py-4 text-left text-xs font-semibold text-slate-900 uppercase tracking-wider">
                              Qty
                            </th>
-                           <th class="px-4 py-4 text-left text-xs font-semibold text-slate-900 uppercase tracking-wider">
+                           <th className="px-4 py-4 text-left text-xs font-semibold text-slate-900 uppercase tracking-wider">
                              Price
                            </th>
                          </tr>
                        </thead>
      
-                       <tbody class="bg-white divide-y divide-gray-200 ">
+                       <tbody className="bg-white divide-y divide-gray-200 ">
                          {Array(20)
                            .fill()
                            .map((_, index) => (
                              <tr>
-                               <td class="px-4 py-4 text-sm text-slate-900 font-medium">
+                               <td className="px-4 py-4 text-sm text-slate-900 font-medium">
                                  Egg
                                </td>
-                               <td class="px-4 py-4 text-sm text-slate-600 font-medium">
+                               <td className="px-4 py-4 text-sm text-slate-600 font-medium">
                                  12
                                </td>
-                               <td class="px-4 py-4 text-sm text-slate-600 font-medium">
+                               <td className="px-4 py-4 text-sm text-slate-600 font-medium">
                                  $12
                                </td>
                              </tr>

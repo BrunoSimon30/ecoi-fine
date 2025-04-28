@@ -5,6 +5,8 @@ import { FiPlus } from "react-icons/fi";
 import { MdOutlineArrowForward } from "react-icons/md";
 import Popup from "@/components/Popup";
 import FundTableLayout from "@/components/Table/FundTable";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 
 export default function FundDistributionPage() {
   const [isDistributePopupOpen, setDistributePopupOpen] = useState(false);
@@ -12,6 +14,8 @@ export default function FundDistributionPage() {
 
   const openDistributePopup = () => setDistributePopupOpen(true);
   const openSubmitfundOpen = () => setSubmitfundOpen(true);
+
+   
 
   return (
     <Dashboardlayout heading={"Fund Distribution"}>
@@ -25,7 +29,9 @@ export default function FundDistributionPage() {
                 <span className="w-12 h-12 rounded-full bg-[#D1E7D1] text-2xl flex items-center justify-center">
                   <HiOutlineUser />
                 </span>
-                <h3 className="text-black text-xl font-semibold">Total Funds</h3>
+                <h3 className="text-black text-xl font-semibold">
+                  Total Funds
+                </h3>
               </div>
               <button
                 onClick={openSubmitfundOpen}
@@ -46,7 +52,9 @@ export default function FundDistributionPage() {
                 <span className="w-7 h-7 rounded-full bg-[#D1E7D1] flex items-center justify-center">
                   <MdOutlineArrowForward />
                 </span>
-                <span className="text-sm text-white font-semibold">Distribute Now</span>
+                <span className="text-sm text-white font-semibold">
+                  Distribute Now
+                </span>
               </button>
             </div>
           </div>
@@ -73,9 +81,15 @@ export default function FundDistributionPage() {
       </div>
 
       {/* Distribute Popup */}
-      <Popup isOpen={isDistributePopupOpen} onClose={() => setDistributePopupOpen(false)} widthClass="w-120">
+      <Popup
+        isOpen={isDistributePopupOpen}
+        onClose={() => setDistributePopupOpen(false)}
+        widthClass="w-120"
+      >
         <div className="space-y-4 py-5 text-center">
-          <h1 className="text-xl font-semibold">Do you want to distribute this amount?</h1>
+          <h1 className="text-xl font-semibold">
+            Do you want to distribute this amount?
+          </h1>
           <div className="flex flex-col sm:flex-row gap-2">
             <button className="w-full border border-gray-200 px-4 py-2 rounded-full bg-[#5B9425] text-white">
               Yes
@@ -88,12 +102,18 @@ export default function FundDistributionPage() {
       </Popup>
 
       {/* Enter Fund Popup */}
-      <Popup isOpen={isSubmitfundOpen} onClose={() => setSubmitfundOpen(false)} widthClass="w-96">
+      <Popup
+        isOpen={isSubmitfundOpen}
+        onClose={() => setSubmitfundOpen(false)}
+        widthClass="w-96"
+      >
         <div className="space-y-4 py-2">
           <h1 className="text-2xl font-semibold">Enter Your Funds</h1>
           <form className="space-y-4">
             <div>
-              <label className="block text-gray-500 mb-2">Enter Your Amount</label>
+              <label className="block text-gray-500 mb-2">
+                Enter Your Amount
+              </label>
               <input
                 type="number"
                 placeholder="$10,000"

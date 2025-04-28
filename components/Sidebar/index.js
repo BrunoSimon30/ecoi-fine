@@ -39,9 +39,9 @@ export default function SideBar({ closeSidebar }) {
           {isManager && (
             <Link
               className={`flex items-center px-3 py-3 transition-colors duration-300 transform rounded-lg ${isActive(
-                "/manager"
+                "/manager/scan-qr"
               )} hover:bg-[#5dad12] hover:text-white border border-[#5B9425] w-fit lg:m-auto lg:mb-5`}
-              href="/manager"
+              href="/manager/scan-qr"
             >
               <span className="text-2xl">
                 <RiQrScanLine />
@@ -55,9 +55,9 @@ export default function SideBar({ closeSidebar }) {
             <>
               <Link
                 className={`flex items-center px-3 py-3 rounded-lg transition duration-300 ${isActive(
-                  "/dashboard"
+                  "/admin"
                 )} hover:bg-[#5dad12] hover:text-white`}
-                href="/dashboard"
+                href="/admin"
               >
                 <span className="text-2xl">
                   <SiAwsorganizations />
@@ -67,9 +67,9 @@ export default function SideBar({ closeSidebar }) {
 
               <Link
                 className={`flex items-center px-3 py-3 rounded-lg transition duration-300 ${isActive(
-                  "/dashboard/manageusers"
+                  "/admin/manageusers"
                 )} hover:bg-[#5dad12] hover:text-white`}
-                href="/dashboard/manageusers"
+                href="/admin/manageusers"
               >
                 <span className="text-2xl">
                   <FiUsers />
@@ -79,9 +79,9 @@ export default function SideBar({ closeSidebar }) {
 
               <Link
                 className={`flex items-center px-3 py-3 rounded-lg transition duration-300 ${isActive(
-                  "/dashboard/tracking-transactions"
+                  "/admin/tracking-transactions"
                 )} hover:bg-[#5dad12] hover:text-white`}
-                href="/dashboard/tracking-transactions"
+                href="/admin/tracking-transactions"
               >
                 <span className="text-2xl">
                   <TbDeviceMobilePin />
@@ -91,9 +91,9 @@ export default function SideBar({ closeSidebar }) {
 
               <Link
                 className={`flex items-center px-3 py-3 rounded-lg transition duration-300 ${isActive(
-                  "/dashboard/inventory-management"
+                  "/admin/inventory-management"
                 )} hover:bg-[#5dad12] hover:text-white`}
-                href="/dashboard/inventory-management"
+                href="/admin/inventory-management"
               >
                 <span className="text-2xl">
                   <LiaFileInvoiceDollarSolid />
