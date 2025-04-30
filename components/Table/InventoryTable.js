@@ -19,6 +19,7 @@ import {
 } from "@/lib/redux/services/admin/inventory-manage";
 import { InventorycustomStyles } from "@/utils/TableStyle/dataTableStyles";
 import Image from "next/image";
+import { useForm } from "react-hook-form";
 
 export default function InventoryTable({ users, pagination, handlePageState }) {
   const [deleteInventoryItem] = useDeleteInventoryItemMutation();
@@ -38,6 +39,23 @@ export default function InventoryTable({ users, pagination, handlePageState }) {
     price: "",
     quantity: "",
     status: "",
+  });
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors },
+    reset,
+  } = useForm({
+    defaultValues: {
+      name: "",
+      code: "",
+      category: "beverages",
+      price: "",
+      quantity: "",
+      status: "in-stock",
+    },
   });
 
   const openUploadSheet = () => setUploadSheet(true);
@@ -68,7 +86,7 @@ export default function InventoryTable({ users, pagination, handlePageState }) {
   // edit product
   const handleEditClick = (product) => {
     setSelectedProduct(product);
-    setProductData({
+    reset({
       name: product.name,
       code: product.code,
       category: product.category,
@@ -79,31 +97,23 @@ export default function InventoryTable({ users, pagination, handlePageState }) {
     setEditProductPopup(true); // Show edit product popup
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setProductData({ ...productData, [name]: value });
-  };
-
-  
+ 
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setImage(file); // Store the selected image
+      setImage(file);
     }
   };
 
-  const handleFormSubmit = async (e) => {
-    e.preventDefault();
-
+  const onSubmit = async (data) => {
     const formData = new FormData();
-    formData.append("name", productData.name);
-    formData.append("code", productData.code);
-    formData.append("category", productData.category);
-    formData.append("price", productData.price);
-    formData.append("quantity", productData.quantity);
-    formData.append("status", productData.status);
-
+    formData.append("name", data.name);
+    formData.append("code", data.code);
+    formData.append("category", data.category);
+    formData.append("price", data.price);
+    formData.append("quantity", data.quantity);
+    formData.append("status", data.status);
     if (image) formData.append("image", image);
 
     try {
@@ -119,6 +129,8 @@ export default function InventoryTable({ users, pagination, handlePageState }) {
         toast.success(res?.message || "Product added successfully!");
       }
       setEditProductPopup(false);
+      reset(); // reset form after submission
+      setImage(null);
     } catch (error) {
       toast.error(error?.data?.message || "Something went wrong!");
     }
@@ -164,7 +176,9 @@ export default function InventoryTable({ users, pagination, handlePageState }) {
     },
     {
       name: "Category",
-      selector: (row) => <p className="  text-gray-800 capitalize">{row.category}</p>,
+      selector: (row) => (
+        <p className="  text-gray-800 capitalize">{row.category}</p>
+      ),
     },
     {
       name: "Price",
@@ -385,7 +399,7 @@ export default function InventoryTable({ users, pagination, handlePageState }) {
         onClose={() => setEditProductPopup(false)}
         widthClass="w-200"
       >
-        <form onSubmit={handleFormSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <h2 className="text-xl font-semibold text-gray-800 text-center">
             {selectedProduct ? "Update Product" : "Add Product"}
           </h2>
@@ -414,7 +428,7 @@ export default function InventoryTable({ users, pagination, handlePageState }) {
               </span>{" "}
               or drag and drop
             </p>
-            <p className="text-xs text-gray-500">PNG, JPG </p>
+            <p className="text-xs text-gray-500">PNG, JPG</p>
             <input
               id="file-upload"
               className="hidden"
@@ -424,32 +438,27 @@ export default function InventoryTable({ users, pagination, handlePageState }) {
             />
           </label>
 
-          {/* Form Fields */}
+          {/* Name */}
           <div className="form-group">
-            <label className="block text-gray-500 text-sm  mb-2">
+            <label className="block text-gray-500 text-sm mb-2">
               Product Name
             </label>
             <input
-              name="name"
-              type="text"
+              {...register("name", { required: true })}
               placeholder="Product Name"
-              value={productData.name}
-              onChange={handleInputChange}
-              required
               className="w-full px-4 py-3 border border-gray-300 rounded-full text-sm focus:outline-none"
             />
           </div>
+
           <div className="grid grid-cols-2 gap-4">
+            {/* Category */}
             <div className="form-group">
-              <label className="block text-gray-500 text-sm  mb-2">
+              <label className="block text-gray-500 text-sm mb-2">
                 Product Category
               </label>
               <div className="relative">
                 <select
-                  id="category"
-                  name="category"
-                  value={productData.category}
-                  onChange={handleInputChange}
+                  {...register("category")}
                   className="w-full px-4 py-3 border appearance-none border-gray-300 rounded-full mb-2 text-sm resize-none focus:outline-none"
                 >
                   <option value="beverages">Beverages</option>
@@ -480,56 +489,49 @@ export default function InventoryTable({ users, pagination, handlePageState }) {
               </div>
             </div>
 
+            {/* Code */}
             <div className="form-group">
-              <label className="block text-gray-500 text-sm  mb-2">Code</label>
+              <label className="block text-gray-500 text-sm mb-2">Code</label>
               <input
-                name="code"
-                type="text"
+                {...register("code", { required: true })}
                 placeholder="Code"
-                value={productData.code}
-                onChange={handleInputChange}
-                required
                 className="w-full px-4 py-3 border border-gray-300 rounded-full text-sm focus:outline-none"
               />
             </div>
           </div>
+
           <div className="grid grid-cols-2 gap-4">
+            {/* Price */}
             <div className="form-group">
-              <label className="block text-gray-500 text-sm  mb-2">Price</label>
+              <label className="block text-gray-500 text-sm mb-2">Price</label>
               <input
-                name="price"
+                {...register("price", { required: true })}
                 type="number"
                 placeholder="Price"
-                value={productData.price}
-                onChange={handleInputChange}
-                required
                 className="w-full px-4 py-3 border border-gray-300 rounded-full text-sm focus:outline-none"
               />
             </div>
 
+            {/* Quantity */}
             <div className="form-group">
-              <label className="block text-gray-500 text-sm  mb-2">
+              <label className="block text-gray-500 text-sm mb-2">
                 Quantity
               </label>
               <input
-                name="quantity"
+                {...register("quantity", { required: true })}
                 type="number"
                 placeholder="Quantity"
-                value={productData.quantity}
-                onChange={handleInputChange}
-                required
                 className="w-full px-4 py-3 border border-gray-300 rounded-full text-sm focus:outline-none"
               />
             </div>
           </div>
+
+          {/* Status */}
           <div className="form-group">
-            <label className="block text-gray-500 text-sm  mb-2">Status</label>
+            <label className="block text-gray-500 text-sm mb-2">Status</label>
             <div className="relative">
               <select
-                id="status"
-                name="status"
-                value={productData.status}
-                onChange={handleInputChange}
+                {...register("status")}
                 className="w-full px-4 py-3 border appearance-none border-gray-300 rounded-full mb-2 text-sm resize-none focus:outline-none"
               >
                 <option value="in-stock">In Stock</option>
@@ -546,7 +548,7 @@ export default function InventoryTable({ users, pagination, handlePageState }) {
           <div className="text-center">
             <button
               type="submit"
-              className="  border border-gray-200 px-8 py-2   gap-4 rounded-full bg-[#5B9425] text-white text-center"
+              className="border border-gray-200 px-8 py-2 gap-4 rounded-full bg-[#5B9425] text-white text-center"
             >
               {selectedProduct ? "Update Product" : "Add Product"}
             </button>

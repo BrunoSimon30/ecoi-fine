@@ -1,6 +1,6 @@
 import Dashboardlayout from "@/components/Layout/Dashboardlayout";
 import { HiOutlineUser } from "react-icons/hi2";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import FundTableLayout from "@/components/Table/FundTable";
 import Popup from "@/components/Popup";
 import InvoiceTable from "@/components/Table/InvoiceTable";
@@ -13,11 +13,20 @@ const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 export default function TrackingTransactions() {
   const [page, setPage] = useState(1);
-  const { data, isFetching, isError, refetch } = useGetTrackingListQuery({
+  const [tab, setTab] = useState("");
+  const [trackData, setTrackData] = useState([]);
+  const { data, isFetching, isError, error } = useGetTrackingListQuery({
     page,
     limit: 10,
+    type: tab,
   });
-  
+
+  useEffect(() => {
+    if (data?.data) {
+      setTrackData(data?.data?.overallAmount);
+    }
+    console.log("trackData", trackData);
+  }, [data, trackData]);
 
   const [donutData] = useState({
     series: [60, 40],
@@ -104,101 +113,95 @@ export default function TrackingTransactions() {
   });
 
   return (
-    <>
-      <LoadingErrorState
-        isLoading={isFetching}
-        isError={isError}
-        logoSrc="/img/s-logo.svg"
-      />
-      <Dashboardlayout heading="Tracking management">
-      {!isFetching && !isError && ( 
-         <div className="space-y-6">
-         <div className="xl:grid grid-cols-5 gap-6">
-           {/* Left Section */}
-           <div className="col-span-4 space-y-6">
-             <div className="xl:grid grid-cols-2 gap-6 space-y-4 xl:space-y-0">
-               {/* Card: Total Transaction */}
-               <Card
-                 title="Total Transaction"
-                 value="$10,000"
-                 icon={<HiOutlineUser />}
-                 badge="22% than the last month"
-               />
+    <Dashboardlayout heading="Tracking management">
+      {isError ? (
+        <LoadingErrorState isError={isError} />
+      ) : isFetching ? (
+        <LoadingErrorState isLoading={isFetching} />
+      ) : (
+        <div className="space-y-6">
+          <div className="xl:grid grid-cols-5 gap-6">
+            {/* Left Section */}
+            <div className="col-span-4 space-y-6">
+              <div className="xl:grid grid-cols-2 gap-6 space-y-4 xl:space-y-0">
+                <Card
+                  title="Total Transaction"
+                  value={`$${trackData?.total_amount}`}
+                  icon={<HiOutlineUser />}
+                  badge="22% than the last month"
+                />
+                {trackData?.per_person_amount && (
+                  <Card
+                    title="Total Donate Per Person"
+                    value={`$${trackData?.per_person_amount}`}
+                    icon={<HiOutlineUser />}
+                    badge={`${trackData?.total_person} Per Person`}
+                  />
+                )}
+              </div>
 
-               {/* Card: Total Donate Per Person */}
-               <Card
-                 title="Total Donate Per Person"
-                 value="$2,000"
-                 icon={<HiOutlineUser />}
-                 badge="5 Per Person"
-               />
-             </div>
+              {/* Fund Table */}
+              <InvoiceTable
+                users={data?.data || []}
+                pagination={data?.data?.pagination}
+                handlePageState={setPage}
+                handlePageTab={setTab} // Passing the tab handler
+                tab={tab}
+              />
+            </div>
 
-             {/* Fund Table */}
-             <InvoiceTable
-             users={data?.data?.transactions || []}
-             pagination={data?.data?.pagination}
-             handlePageState={setPage}
-             />
-           </div>
+            {/* Right Section */}
+            <div className="col-span-1 space-y-4">
+              {/* Transaction Chart */}
+              <div className="border border-gray-200 p-4 rounded-2xl space-y-6">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-xl font-semibold text-black">
+                    Transaction
+                  </h3>
+                  <button className="bg-[#FAD89C] rounded-full px-4 py-2 text-sm">
+                    Monthly
+                  </button>
+                </div>
 
-           {/* Right Section */}
-           <div className="col-span-1 space-y-4">
-             {/* Transaction Chart */}
-             <div className="border border-gray-200 p-4 rounded-2xl space-y-6">
-               <div className="flex justify-between items-center">
-                 <h3 className="text-xl font-semibold text-black">
-                   Transaction
-                 </h3>
-                 <button className="bg-[#FAD89C] rounded-full px-4 py-2 text-sm">
-                   Monthly
-                 </button>
-               </div>
+                <button className="w-full border border-gray-200 rounded-full px-4 py-2 text-[#0069FF]">
+                  Total Transaction
+                </button>
 
-               <button
-                 onClick={() => setDistributePopupOpen(true)}
-                 className="w-full border border-gray-200 rounded-full px-4 py-2 text-[#0069FF]"
-               >
-                 Total Transaction
-               </button>
+                <div className="space-y-2">
+                  <h3 className="text-3xl font-semibold text-black">$10,000</h3>
+                  <p className="text-sm text-gray-500">
+                    This month’s sales volume is 16% <br /> higher than last
+                    month.
+                  </p>
+                </div>
 
-               <div className="space-y-2">
-                 <h3 className="text-3xl font-semibold text-black">$10,000</h3>
-                 <p className="text-sm text-gray-500">
-                   This month’s sales volume is 16% <br /> higher than last
-                   month.
-                 </p>
-               </div>
+                <div className="  gap-4">
+                  <Chart
+                    options={lineOptions}
+                    series={lineData}
+                    type="line"
+                    height={150}
+                  />
+                </div>
+              </div>
 
-               <div className="  gap-4">
-                 <Chart
-                   options={lineOptions}
-                   series={lineData}
-                   type="line"
-                   height={150}
-                 />
-               </div>
-             </div>
-
-             {/* Donut Chart */}
-             <div className="border border-gray-200 p-4 rounded-2xl space-y-2">
-               <h3 className="text-xl font-semibold text-black">
-                 Transaction View
-               </h3>
-               <Chart
-                 options={donutData.options}
-                 series={donutData.series}
-                 type="donut"
-                 width="100%"
-               />
-             </div>
-           </div>
-         </div>
-       </div>
+              {/* Donut Chart */}
+              <div className="border border-gray-200 p-4 rounded-2xl space-y-2">
+                <h3 className="text-xl font-semibold text-black">
+                  Transaction View
+                </h3>
+                <Chart
+                  options={donutData.options}
+                  series={donutData.series}
+                  type="donut"
+                  width="100%"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
       )}
-       
-      </Dashboardlayout>
-    </>
+    </Dashboardlayout>
   );
 }
 

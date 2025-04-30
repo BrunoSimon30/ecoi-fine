@@ -6,21 +6,20 @@ import { useGetUserListQuery } from "@/lib/redux/services/admin/user-manage.api"
 import { LoadingErrorState } from "@/components/Loading/LoadingErrorState";
 
 export default function ManagerUsers() {
-  const [page, setPage] = useState(1)
-  const { data, isLoading, isError, refetch } = useGetUserListQuery({
+  const [page, setPage] = useState(1);
+  const { data, isLoading, isError } = useGetUserListQuery({
     page,
     limit: 10,
   });
 
   return (
     <>
-      <LoadingErrorState
-        isLoading={isLoading}
-        isError={isError}
-        logoSrc="/img/s-logo.svg"
-      />
       <Dashboardlayout heading={"Managing Users"}>
-        {!isLoading && !isError && (
+        {isError ? (
+          <LoadingErrorState isError={isError} />
+        ) : isLoading ? (
+          <LoadingErrorState isLoading={isLoading} />
+        ) : (
           <div className="users-wrap space-y-6">
             <UserTableLayout
               users={data?.data?.users || []}

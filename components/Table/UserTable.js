@@ -16,9 +16,13 @@ import { toast } from "sonner";
 import { FiEye } from "react-icons/fi";
 import Popup from "@/components/Popup";
 import Image from "next/image";
-import {   userscustomStyles } from "@/utils/TableStyle/dataTableStyles";
+import { userscustomStyles } from "@/utils/TableStyle/dataTableStyles";
 
-export default function UserTableLayout({ users, pagination, handlePageState }) {
+export default function UserTableLayout({
+  users,
+  pagination,
+  handlePageState,
+}) {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedUser, setSelectedUser] = useState(null);
   const [isDistributePopupOpen, setDistributePopupOpen] = useState(false);
@@ -30,7 +34,7 @@ export default function UserTableLayout({ users, pagination, handlePageState }) 
 
   const handlePageChange = (page) => {
     console.log(page, "page");
-setCurrentPage(page);
+    setCurrentPage(page);
     if (page >= 1 && page <= pagination.totalPages) {
       handlePageState(page);
     }
@@ -54,7 +58,6 @@ setCurrentPage(page);
     }
   };
 
-  
   const columns = [
     {
       name: "Name",

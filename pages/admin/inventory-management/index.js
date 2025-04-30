@@ -7,31 +7,27 @@ import { LoadingErrorState } from "@/components/Loading/LoadingErrorState";
 
 export default function InventoryManage() {
   const [page, setPage] = useState(1);
-  const { data, isFetching, isError, refetch } = useGetInventoryListQuery({
+  const { data, isFetching, isError } = useGetInventoryListQuery({
     page,
     limit: 10,
   });
-  
-console.log(data, "inventory data");
 
   return (
     <>
-      <LoadingErrorState
-        isLoading={isFetching}
-        isError={isError}
-        logoSrc="/img/s-logo.svg"
-      />
       <Dashboardlayout heading={"Inventory Managerment"}>
-      {!isFetching && !isError && (
-         <div className="users-wrap space-y-6">
-         <InventoryTable 
-         users={data?.data?.inventory || []}
-         pagination={data?.data?.pagination}
-         handlePageState={setPage}
-         />
-       </div>
-      )}
-       
+        {isError ? (
+          <LoadingErrorState isError={isError} />
+        ) : isFetching ? (
+          <LoadingErrorState isLoading={isFetching} />
+        ) : (
+          <div className="users-wrap space-y-6">
+            <InventoryTable
+              users={data?.data?.inventory || []}
+              pagination={data?.data?.pagination}
+              handlePageState={setPage}
+            />
+          </div>
+        )}
       </Dashboardlayout>
     </>
   );

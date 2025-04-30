@@ -1,10 +1,15 @@
 // components/LoadingErrorState.js
 import React from "react";
 
-export const LoadingErrorState = ({ isLoading, isError, logoSrc }) => {
+export const LoadingErrorState = ({
+  isLoading,
+  isError,
+  logoSrc = "/img/s-logo.svg",
+}) => {
   if (isLoading) {
     return (
-      <div className="main-bg flex items-center justify-center h-screen">
+      // <div className="main-bg flex items-center justify-center h-screen">
+      <div className=" flex items-center justify-center h-screen">
         <div className="flex flex-col items-center space-y-4">
           <img
             src={logoSrc}

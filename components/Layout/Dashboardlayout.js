@@ -35,7 +35,7 @@ export default function Dashboardlayout({ children, heading }) {
             <div className="flex items-center justify-between">
               <div className="w-full">
                 <h1 className="text-black text-xl md:text-3xl font-semibold">{heading}</h1>
-                <p className="text-base text-gray-500">Lorem Ipsum Dolar</p>
+                {/* <p className="text-base text-gray-500">Lorem Ipsum Dolar</p> */}
               </div>
 
               {/* Right Section */}

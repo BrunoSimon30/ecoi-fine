@@ -1,5 +1,5 @@
 import Link from "next/link";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { IoChevronBackSharp, IoChevronForwardSharp } from "react-icons/io5";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import DataTable from "react-data-table-component";
@@ -11,12 +11,23 @@ import Popup from "../Popup";
 import Image from "next/image";
 import { userscustomStyles } from "@/utils/TableStyle/dataTableStyles";
 
-export default function InvoiceTable({ users, pagination, handlePageState }) {
+export default function InvoiceTable({
+  users,
+  pagination,
+  handlePageState,
+  handlePageTab,
+  tab,
+}) {
   const [currentPage, setCurrentPage] = useState(1);
   const [HistoryUser, setHistoryUser] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
 
-  const openHistoryUser = () => setHistoryUser(true);
-  console.log(users, "tracking users data");
+  const openHistoryUser = (user) => {
+    setSelectedUser(user);
+    setHistoryUser(true);
+  };
+
+  console.log(users, "selectedUser");
 
   const handlePageChange = (page) => {
     console.log(page, "page");
@@ -27,49 +38,49 @@ export default function InvoiceTable({ users, pagination, handlePageState }) {
   };
 
   const columns = [
-   {
-        name: "Name",
-        selector: (row) => row.full_name,
-        sortable: true,
-        width: "250px",
-        cell: (row) => (
-          <div className="relative">
-            {row.apply && (
-              <span className="bg-[#5B9425] text-white px-4 py-1 rounded-full absolute -top-6 -left-5">
-                Re-applied
-              </span>
+    {
+      name: "Name",
+      selector: (row) => row.user?.full_name || "N/A",
+      sortable: true,
+      width: "250px",
+      cell: (row) => (
+        <div className="relative">
+          {row.apply && (
+            <span className="bg-[#5B9425] text-white px-4 py-1 rounded-full absolute -top-6 -left-5">
+              Re-applied
+            </span>
+          )}
+          <div className="flex items-center gap-3">
+            {row.avatar ? (
+              <img
+                src={row.avatar}
+                alt={row.full_name}
+                className="w-10 h-10 rounded-full"
+              />
+            ) : (
+              <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                <span className="text-lg">
+                  {" "}
+                  <HiOutlineUser />
+                </span>
+              </div>
             )}
-            <div className="flex items-center gap-3">
-              {row.avatar ? (
-                <img
-                  src={row.avatar}
-                  alt={row.full_name}
-                  className="w-10 h-10 rounded-full"
-                />
-              ) : (
-                <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-                  <span className="text-lg">
-                    {" "}
-                    <HiOutlineUser />
-                  </span>
-                </div>
-              )}
-              <div>
-                <div className="font-semibold text-gray-800">{row?.user?.full_name || 'N/A'}</div>
-                <div className="text-sm text-gray-500">{row?.user?.email || 'N/A'}</div>
+            <div>
+              <div className="font-semibold text-gray-800">
+                {row?.user?.full_name || "N/A"}
+              </div>
+              <div className="text-sm text-gray-500">
+                {row?.user?.email || "N/A"}
               </div>
             </div>
           </div>
-        ),
-      },
+        </div>
+      ),
+    },
 
     {
       name: "User ID",
-      selector: (row) => (
-        <p>
-          {row?.user?._id || "N/A"}
-        </p>
-      ),
+      selector: (row) => <p>{row?.user?._id || "N/A"}</p>,
       sortable: true,
     },
 
@@ -88,8 +99,7 @@ export default function InvoiceTable({ users, pagination, handlePageState }) {
           </p>
         );
       },
-    }
-    ,
+    },
     {
       name: "status",
       cell: (row) => (
@@ -104,7 +114,7 @@ export default function InvoiceTable({ users, pagination, handlePageState }) {
       name: "Edit",
       cell: (row) => (
         <button
-          onClick={openHistoryUser}
+          onClick={() => openHistoryUser(row)}
           className="text-white bg-green-600 text-sm px-5 py-2 rounded-full"
         >
           View
@@ -112,8 +122,6 @@ export default function InvoiceTable({ users, pagination, handlePageState }) {
       ),
     },
   ];
-
-  
 
   return (
     <>
@@ -125,22 +133,47 @@ export default function InvoiceTable({ users, pagination, handlePageState }) {
             </span>
             All Invoie
           </h2>
-          <div className="flex items-center gap-2">
-          <Link
-            href="#"
-            onClick={() => {
-              if (pagination.prev) handlePageChange(pagination.prev);
-            }}
-            className={`flex items-center text-[#5B9425] px-2 py-2 text-sm rounded-xl bg-white ${
-              currentPage === 1 ? "cursor-not-allowed opacity-50" : ""
-            }`}
-          >
-            <IoChevronBackSharp />
-          </Link>
+          <div className="flex gap-4 items-center">
+            <button
+              onClick={() => handlePageTab("")}
+              className={`px-4 py-2 rounded-full font-medium ${
+                tab === ""
+                  ? "bg-[#D1E7D2] text-[#5B9425]"
+                  : "bg-gray-100 text-[#5B9425]"
+              }`}
+            >
+              Users
+            </button>
 
-          <div className="hidden lg:flex gap-x-3 items-center">
-            {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map(
-              (page) => (
+            <button
+              onClick={() => handlePageTab("fund_distribution")}
+              className={`px-4 py-2 rounded-full font-medium ${
+                tab === "fund_distribution"
+                  ? "bg-[#D1E7D2] text-[#5B9425]"
+                  : "bg-gray-100 text-[#5B9425]"
+              }`}
+            >
+              Fund History
+            </button>
+          </div>
+          <div className="flex items-center gap-2">
+            <Link
+              href="#"
+              onClick={() => {
+                if (pagination.prev) handlePageChange(pagination.prev);
+              }}
+              className={`flex items-center text-[#5B9425] px-2 py-2 text-sm rounded-xl bg-white ${
+                currentPage === 1 ? "cursor-not-allowed opacity-50" : ""
+              }`}
+            >
+              <IoChevronBackSharp />
+            </Link>
+
+            <div className="hidden lg:flex gap-x-3 items-center">
+              {Array.from(
+                { length: pagination.totalPages },
+                (_, i) => i + 1
+              ).map((page) => (
                 <Link
                   href="#"
                   key={page}
@@ -151,29 +184,28 @@ export default function InvoiceTable({ users, pagination, handlePageState }) {
                 >
                   {page}
                 </Link>
-              )
-            )}
-          </div>
+              ))}
+            </div>
 
-          <Link
-            href="#"
-            onClick={() => {
-              if (pagination.next) handlePageChange(pagination.next);
-            }}
-            className={`flex items-center text-[#5B9425] px-2 py-2 text-sm rounded-xl bg-white ${
-              currentPage === pagination.totalCount
-                ? "cursor-not-allowed opacity-50"
-                : ""
-            }`}
-          >
-            <IoChevronForwardSharp />
-          </Link>
-        </div>
+            <Link
+              href="#"
+              onClick={() => {
+                if (pagination.next) handlePageChange(pagination.next);
+              }}
+              className={`flex items-center text-[#5B9425] px-2 py-2 text-sm rounded-xl bg-white ${
+                currentPage === pagination.totalCount
+                  ? "cursor-not-allowed opacity-50"
+                  : ""
+              }`}
+            >
+              <IoChevronForwardSharp />
+            </Link>
+          </div>
         </div>
         <div className="h-[460px] overflow-scroll md:overflow-x-hidden ">
           <DataTable
             columns={columns}
-            data={users}
+            data={users?.transactions || []}
             customStyles={userscustomStyles}
             highlightOnHover
             pointerOnHover
@@ -181,7 +213,6 @@ export default function InvoiceTable({ users, pagination, handlePageState }) {
           />
         </div>
       </div>
-
       <Popup
         isOpen={HistoryUser}
         onClose={() => setHistoryUser(false)}
@@ -190,8 +221,14 @@ export default function InvoiceTable({ users, pagination, handlePageState }) {
         <div className="space-y-4 py-3">
           <div className="text-center">
             <h1 className="text-xl font-semibold">Receipt</h1>
-            <p className="text-sm text-gray-500">Time : 12:00</p>
-            <p className="text-sm text-gray-500">Date : 12-April-2025</p>
+            <p className="text-sm text-gray-500">
+              Time :{" "}
+              {new Date(selectedUser?.transactionDate).toLocaleTimeString()}
+            </p>
+            <p className="text-sm text-gray-500">
+              Date :{" "}
+              {new Date(selectedUser?.transactionDate).toLocaleDateString()}
+            </p>
           </div>
           <div className="space-y-4 ">
             <div className="space-y-4">
@@ -207,8 +244,12 @@ export default function InvoiceTable({ users, pagination, handlePageState }) {
                   />
                 </div>
                 <div>
-                  <h4 className="text-black text-lg  ">Herry</h4>
-                  <p className="text-sm text-gray-500">$2,000</p>
+                  <h4 className="text-black text-lg  ">
+                    {selectedUser?.user?.full_name || "N/A"}
+                  </h4>
+                  <p className="text-sm text-gray-500">
+                    ${selectedUser?.amount}
+                  </p>
                 </div>
               </div>
             </div>
@@ -230,34 +271,34 @@ export default function InvoiceTable({ users, pagination, handlePageState }) {
                     </tr>
                   </thead>
 
-                  <tbody className="bg-white divide-y divide-gray-200 ">
-                    {Array(20)
-                      .fill()
-                      .map((_, index) => (
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {selectedUser?.relatedPurchase?.items?.map(
+                      (item, index) => (
                         <tr key={index}>
                           <td className="px-4 py-4 text-sm text-slate-900 font-medium">
-                            Egg
+                            {item.product?.name || "N/A"}
                           </td>
                           <td className="px-4 py-4 text-sm text-slate-600 font-medium">
-                            12
+                            {item.quantity || 0}
                           </td>
                           <td className="px-4 py-4 text-sm text-slate-600 font-medium">
-                            $12
+                            $
+                            {item.product?.price ||
+                              selectedUser?.total_amount ||
+                              0}
                           </td>
                         </tr>
-                      ))}
+                      )
+                    )}
                   </tbody>
                 </table>
               </div>
             </div>
             <div className="space-y-4">
               <h4 className="text-right">
-                <span>Total :</span> $12,00
+                <span className="text-gray-700">Total :</span>{" "}
+                {selectedUser?.relatedPurchase?.total_amount || "0"}
               </h4>
-
-              <button className="w-full  border border-gray-200 px-4 py-2   gap-4 rounded-full bg-[#5B9425] text-white text-center">
-                Download
-              </button>
             </div>
           </div>
         </div>
